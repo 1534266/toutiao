@@ -1,8 +1,8 @@
 <template>
   <div class="layout-container">
     <!-- 子路由出口 -->
-        <router-view />
-<!-- route 开启路由模式 -->
+    <router-view />
+    <!-- route 开启路由模式 -->
     <van-tabbar class="layout-tabbar" route>
       <van-tabbar-item to="/">
         <i slot="icon" class="iconfont toutiaoshouye"> </i>
@@ -21,7 +21,7 @@
 
       <van-tabbar-item to="/my">
         <i slot="icon" class="iconfont toutiaowode"> </i>
-        <span class="text">我的</span>
+        <span class="text">{{ $store.state.user ? '我的' : '未登录' }}</span>
       </van-tabbar-item>
     </van-tabbar>
   </div>

@@ -2,6 +2,8 @@
   <div class="login-container">
     <!-- 导航栏 -->
     <van-nav-bar class="page-nav-bar" title="登录" />
+    <van-icon v-if="$route.query.redirect" slot="left" name="cross"
+    @click="$router.back()"/>
     <!-- 导航栏结束 -->
 
     <!-- 登录菜单 -->
@@ -48,7 +50,7 @@
       </van-field>
       <div class="login-btn-wrap">
         <van-button class="login-btn" block type="info" native-type="submit">
-          提交
+          登录
         </van-button>
       </div>
     </van-form>
@@ -113,6 +115,9 @@ export default {
         const { data } = await login(user)
         this.$store.commit('setUser', data.data)
         this.$toast.success('登录成功')
+        // 跳转为原来的页面//this.$router.back()有漏铜
+        // 从哪里过来的.直接到那里,获取不到redirect,到首页
+        this.$router.push(this.$route.query.redirect || '/')
       } catch (err) {
         if (err.response.status === 400) {
           this.$toast.fail('手机号或验证码错误')
