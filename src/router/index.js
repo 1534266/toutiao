@@ -13,8 +13,23 @@ const routes = [
     children: [
       { name: 'home', path: '', component: () => import('@/views/home') },
       { name: 'qa', path: '/qa', component: () => import('@/views/qa') },
-      { name: 'video', path: '/video', component: () => import('@/views/video') },
-      { name: 'my', path: '/my', component: () => import('@/views/my') }
+      {
+        name: 'video',
+        path: '/video',
+        component: () => import('@/views/video')
+      },
+      { name: 'my', path: '/my', component: () => import('@/views/my') },
+      {
+        name: 'search',
+        path: '/search',
+        component: () => import('@/views/search')
+      },
+      {
+        name: 'article',
+        path: '/article/:articleId',
+        component: () => import('@/views/article'),
+        props: true
+      }
     ]
   }
 ]

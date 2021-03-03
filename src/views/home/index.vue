@@ -1,7 +1,8 @@
 <template>
   <div class="home-container">
     <!-- 导航栏 -->
-    <van-nav-bar class="page-nav-bar">
+    <!-- #1 -->
+    <van-nav-bar class="page-nav-bar" fixed>
       <van-button
         class="search-btn"
         slot="title"
@@ -9,79 +10,109 @@
         size="small"
         round
         icon="search"
+        to="/search"
         >搜索</van-button
       >
     </van-nav-bar>
-    <!-- 导航栏结束-->
     <!-- 频道列表 -->
     <van-tabs class="channel-tabs" v-model="active" animated swipeable>
       <van-tab
-        :title="channel.name"
         v-for="channel in channels"
         :key="channel.id"
+        :title="channel.name"
       >
         <article-list :channel="channel"></article-list>
       </van-tab>
-
       <div slot="nav-right" class="placeholder"></div>
-      <div slot="nav-right" class="hamburger-btn" @click="isChannelshow = true">
-        <i class="iconfont toutiaogengduo"></i>
+      <div
+        slot="nav-right"
+        class="hamburger-btn"
+        @click="isChannelEditShow = true"
+      >
+        <i class="iconfont icongengduo"></i>
       </div>
     </van-tabs>
-    <!--// 频道列表 -->
-
-    <!-- 频倒编辑弹出层 -->
+    <!-- 频道编辑弹出层 -->
     <van-popup
-      v-model="isChannelshow"
+      v-model="isChannelEditShow"
       closeable
       position="bottom"
-        close-icon-position="top-left"
+      close-icon-position="top-left"
       :style="{ height: '100%' }"
-    />
+    >
+      <channel-edit
+        :my-channels="channels"
+        :active="active"
+        @update-active="onUpdateActive"
+      />
+    </van-popup>
   </div>
 </template>
+
 <script>
 import { getUserChannels } from '@/api/user'
 import ArticleList from './components/article-list'
-
+import ChannelEdit from './components/channel-edit'
+import { mapState } from 'vuex'
+import { getItem } from '@/utils/storage'
 export default {
-  name: 'HomePage',
-  components: { ArticleList },
-  props: {},
+  name: 'HomeIndex',
+  components: {
+    ArticleList,
+    ChannelEdit
+  },
   data() {
     return {
       active: 0,
-      // 定义数据列表并接受频道
       channels: [],
-      // 控制频道弹出层的显示状态
-
-      isChannelshow: true
+      isChannelEditShow: false // 控制频道编辑弹出层的显示
     }
+  },
+  computed: {
+    ...mapState(['user'])
   },
   created() {
     this.loadChannels()
   },
-  computed: {},
-  watch: {},
-  mounted() {},
   methods: {
     async loadChannels() {
       try {
-        const { data } = await getUserChannels()
-        this.channels = data.data.channels
+        let channels = []
+        // 如果登录了
+        if (this.user) {
+          const { data } = await getUserChannels()
+          channels = data.data.channels
+        } else {
+          // 未登录
+          const localChannels = getItem('TOUTIAO_CHANNELS')
+          if (localChannels) {
+            // 本地有，直接用
+            channels = localChannels
+          } else {
+            // 本地没有，未登录则会获取默认频道列表
+            const { data } = await getUserChannels()
+            channels = data.data.channels
+          }
+        }
+        this.channels = channels
       } catch (err) {
         this.$toast('获取频道数据失败')
       }
+    },
+    onUpdateActive(index, isChannelEditShow = true) {
+      this.active = index
+      this.isChannelEditShow = isChannelEditShow // 关闭弹层
     }
   }
 }
 </script>
 
-<style lang="less">
+<style lang="less" scoped>
 // 当前组件中加了 scoped 对内部样式的修改需要加 /deep/，或者去掉 scoped
 .home-container {
+  // #3
+  padding-top: 174px;
   padding-bottom: 100px;
-
   /deep/ .van-nav-bar__title {
     max-width: unset;
   }
@@ -96,7 +127,13 @@ export default {
     }
   }
   /deep/ .channel-tabs {
+    // #2
     .van-tabs__wrap {
+      position: fixed;
+      top: 92px;
+      left: 0;
+      right: 0;
+      z-index: 1;
       height: 82px;
     }
     // Tab 标签页
