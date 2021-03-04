@@ -2,7 +2,7 @@
   <div class="search-history">
     <van-cell title="搜索历史">
       <div v-if="isDeleteShow">
-        <span>全部删除</span>
+        <span @click="$emit('clear-search-histories')">全部删除</span>
         &nbsp;&nbsp;
         <span @click="isDeleteShow = false">完成</span>
       </div>
@@ -12,6 +12,7 @@
       :title="item"
       v-for="(item, index) in searchHistories"
       :key="index"
+      @click="onSearchItemClick(item, index)"
     >
       <van-icon name="close" v-show="isDeleteShow" />
     </van-cell>
@@ -34,7 +35,18 @@ export default {
     }
   },
 
-  methods: {}
+  methods: {
+    // 删除
+    onSearchItemClick(item, index) {
+      // 删除状态,点一个删除一个历史记录
+      if (this.isDeleteShow) {
+        this.searchHistories.splice(index, 1)
+      } else {
+        // 非删除状态直接进入搜索
+        this.$emit('search', item)
+      }
+    }
+  }
 }
 </script>
 
