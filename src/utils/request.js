@@ -3,7 +3,7 @@ import store from '@/store'
 import jsonBig from 'json-bigint'
 
 const request = axios.create({
-  baseURL: 'http://ttapi.research.itcast.cn/', // 接口的基准路径,
+  // baseURL: 'http://ttapi.research.itcast.cn/', // 接口的基准路径,
   // 自定义后端的返回原始数据
   transformResponse: [
     function(data) {
